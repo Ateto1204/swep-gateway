@@ -1,0 +1,25 @@
+_format_version: "3.0"
+services:
+  - name: user-serv
+    url: http://swep-user-serv.zeabur.internal:8080
+    routes:
+      - name: route1
+        protocols: ["http", "https"]
+        paths: ["/user"]
+        methods: ["GET", "POST", "PATCH"]
+
+  - name: msg-serv
+    url: http://swep-msg-serv.zeabur.internal:8080
+    routes:
+      - name: route2
+        protocols: ["http", "https"]
+        paths: ["/msg"]
+        methods: ["GET", "POST", "PATCH"]
+
+  - name: chat-serv
+    url: http://swep-chat-serv.zeabur.internal:8080
+    routes:
+      - name: route3
+        protocols: ["http", "https"]
+        paths: ["/chat"]
+        methods: ["GET", "POST", "PATCH"]
