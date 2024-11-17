@@ -6,7 +6,7 @@ services:
       - name: route1
         protocols: ["http", "https"]
         paths: ["/user"]
-        methods: ["GET", "POST", "PATCH"]
+        methods: ["GET", "POST", "PATCH", "OPTIONS"]
 
   - name: msg-serv
     url: http://swep-msg-serv.zeabur.internal:8080
@@ -14,7 +14,7 @@ services:
       - name: route2
         protocols: ["http", "https"]
         paths: ["/msg"]
-        methods: ["GET", "POST", "PATCH"]
+        methods: ["GET", "POST", "PATCH", "OPTIONS"]
 
   - name: chat-serv
     url: http://swep-chat-serv.zeabur.internal:8080
@@ -22,4 +22,74 @@ services:
       - name: route3
         protocols: ["http", "https"]
         paths: ["/chat"]
-        methods: ["GET", "POST", "PATCH"]
+        methods: ["GET", "POST", "PATCH", "OPTIONS"]
+
+plugins:
+  - name: cors
+    service: user-serv
+    config:
+      origins: ["*"]
+      methods: ["GET", "POST", "PATCH", "OPTIONS"]
+      headers:
+        - Accept
+        - Authorization
+        - Content-Type
+      exposed_headers:
+        - Authorization
+      credentials: true
+      max_age: 3600
+
+  - name: rate-limiting
+    service: user-serv
+    config:
+      minute: 30
+      limit_by: ip
+      policy: local
+      fault_tolerant: true
+      hide_client_headers: false
+
+  - name: cors
+    service: msg-serv
+    config:
+      origins: ["*"]
+      methods: ["GET", "POST", "PATCH", "OPTIONS"]
+      headers:
+        - Accept
+        - Authorization
+        - Content-Type
+      exposed_headers:
+        - Authorization
+      credentials: true
+      max_age: 3600
+
+  - name: rate-limiting
+    service: msg-serv
+    config:
+      minute: 50
+      limit_by: ip
+      policy: local
+      fault_tolerant: true
+      hide_client_headers: false
+
+  - name: cors
+    service: chat-serv
+    config:
+      origins: ["*"]
+      methods: ["GET", "POST", "PATCH", "OPTIONS"]
+      headers:
+        - Accept
+        - Authorization
+        - Content-Type
+      exposed_headers:
+        - Authorization
+      credentials: true
+      max_age: 3600
+
+  - name: rate-limiting
+    service: chat-serv
+    config:
+      minute: 20
+      limit_by: ip
+      policy: local
+      fault_tolerant: true
+      hide_client_headers: false
