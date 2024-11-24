@@ -6,7 +6,7 @@ services:
       - name: route1
         protocols: ["http", "https"]
         paths: ["/user"]
-        methods: ["GET", "POST", "PATCH", "OPTIONS"]
+        methods: ["GET", "POST", "PATCH", "OPTIONS", "DELETE"]
 
   - name: msg-serv
     url: http://swep-msg-serv.zeabur.internal:8080
@@ -14,7 +14,7 @@ services:
       - name: route2
         protocols: ["http", "https"]
         paths: ["/msg"]
-        methods: ["GET", "POST", "PATCH", "OPTIONS"]
+        methods: ["GET", "POST", "PATCH", "OPTIONS", "DELETE"]
 
   - name: chat-serv
     url: http://swep-chat-serv.zeabur.internal:8080
@@ -22,14 +22,14 @@ services:
       - name: route3
         protocols: ["http", "https"]
         paths: ["/chat"]
-        methods: ["GET", "POST", "PATCH", "OPTIONS"]
+        methods: ["GET", "POST", "PATCH", "OPTIONS", "DELETE"]
 
 plugins:
   - name: cors
     service: user-serv
     config:
       origins: ["*"]
-      methods: ["GET", "POST", "PATCH", "OPTIONS"]
+      methods: ["GET", "POST", "PATCH", "OPTIONS", "DELETE"]
       headers:
         - Accept
         - Authorization
@@ -42,7 +42,7 @@ plugins:
   - name: rate-limiting
     service: user-serv
     config:
-      minute: 30
+      minute: 10000
       limit_by: ip
       policy: local
       fault_tolerant: true
@@ -52,7 +52,7 @@ plugins:
     service: msg-serv
     config:
       origins: ["*"]
-      methods: ["GET", "POST", "PATCH", "OPTIONS"]
+      methods: ["GET", "POST", "PATCH", "OPTIONS", "DELETE"]
       headers:
         - Accept
         - Authorization
@@ -65,7 +65,7 @@ plugins:
   - name: rate-limiting
     service: msg-serv
     config:
-      minute: 50
+      minute: 10000
       limit_by: ip
       policy: local
       fault_tolerant: true
@@ -75,7 +75,7 @@ plugins:
     service: chat-serv
     config:
       origins: ["*"]
-      methods: ["GET", "POST", "PATCH", "OPTIONS"]
+      methods: ["GET", "POST", "PATCH", "OPTIONS", "DELETE"]
       headers:
         - Accept
         - Authorization
@@ -88,8 +88,27 @@ plugins:
   - name: rate-limiting
     service: chat-serv
     config:
-      minute: 20
+      minute: 10000
       limit_by: ip
       policy: local
       fault_tolerant: true
       hide_client_headers: false
+
+# consumers:
+#   - username: demo-user
+#     oauth2_credentials:
+#       - name: demo-oauth
+#         client_id: 
+#         client_secret: 
+#         redirect_uris:
+#           - http://localhost:5173/callback
+
+# plugins:
+#   - name: oauth2
+#     config:
+#       scopes:
+#         - openid
+#         - email
+#         - profile
+#       mandatory_scope: true
+#       enable_client_credentials: true
